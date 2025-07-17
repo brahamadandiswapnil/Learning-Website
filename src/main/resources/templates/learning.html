@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Learning Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+  >
+  <style>
+    #sourceCode {
+      height: 300px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    #output {
+      min-height: 100px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+<div class="container-fluid mt-4">
+  <div class="row">
+    <!-- Left Column: Video and Info -->
+    <div class="col-lg-6 mb-4">
+      <h3 th:text="${course.title}">Course Title</h3>
+      <p th:text="${course.description}">Course Description</p>
+      <div class="ratio ratio-16x9">
+        <iframe
+          th:src="'https://www.youtube.com/embed/' + ${#strings.substring(course.youtubeUrl, course.youtubeUrl.indexOf('v=') + 2)}"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </div>
+
+    <!-- Right Column: Code Compiler -->
+    <div class="col-lg-6">
+      <h4>Try Code</h4>
+      <div class="mb-3">
+        <select id="language" class="form-select" style="max-width: 200px;">
+          <option value="52">C</option>
+          <option value="54">C++</option>
+          <option value="62" selected>Java</option>
+          <option value="71">Python</option>
+          <option value="63">JavaScript</option>
+        </select>
+      </div>
+      <textarea id="sourceCode" class="form-control mb-3">public class Main {
+	      public static void main(String[] args) {
+	          System.out.println("Hello, World!");
+	      }
+	  }</textarea>
+      <button class="btn btn-primary" onclick="compileCode()">Run Code</button>
+      <h5 class="mt-3">Output:</h5>
+      <pre id="output" class="bg-light p-3 border rounded"></pre>
+    </div>
+  </div>
+</div>
+
+<script>
+  const apiUrl = 'https://judge0-ce.p.rapidapi.com';
+  const apiKey = '3858edc74amsh1aaf691a8feda86p19356djsn69faa8456cd1';
+
+  async function compileCode() {
+    const sourceCode = document.getElementById('sourceCode').value;
+    const languageId = document.getElementById('language').value;
+
+    const response = await fetch(`${apiUrl}/submissions?base64_encoded=false&wait=true`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-RapidAPI-Key': apiKey,
+        'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com'
+      },
+      body: JSON.stringify({
+        source_code: sourceCode,
+        language_id: languageId
+      })
+    });
+
+    const data = await response.json();
+    document.getElementById('output').innerText =
+      data.stdout || data.stderr || data.compile_output || 'No output';
+  }
+</script>
+</body>
+</html>

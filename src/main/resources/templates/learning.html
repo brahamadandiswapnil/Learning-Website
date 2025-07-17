@@ -28,10 +28,13 @@
       <h3 th:text="${course.title}">Course Title</h3>
       <p th:text="${course.description}">Course Description</p>
       <div class="ratio ratio-16x9">
-        <iframe
-          th:src="'https://www.youtube.com/embed/' + ${#strings.substring(course.youtubeUrl, course.youtubeUrl.indexOf('v=') + 2)}"
-          allowfullscreen
-        ></iframe>
+       <iframe
+		  th:src="${course.youtubeUrl}"
+		  width="560"
+		  height="315"
+		  frameborder="0"
+		  allowfullscreen
+		></iframe>
       </div>
     </div>
 
